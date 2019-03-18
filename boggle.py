@@ -94,7 +94,42 @@ class BoggleBoard(object):
                 shuffle_list.append(cube)
         random.shuffle(shuffle_list)
         self.build_board(shuffle_list)
-        
+    def _adjacent_indices(self,previousIndex):
+        adjacentIndices = []
+        adjacentIndices.append((previousIndex[0],previousIndex[1] - 1))
+        adjacentIndices.append((previousIndex[0],previousIndex[1] + 1))
+        adjacentIndices.append((previousIndex[0] + 1,previousIndex[1] + 1))
+        adjacentIndices.append((previousIndex[0] - 1,previousIndex[1] + 1))
+        adjacentIndices.append((previousIndex[0] + 1,previousIndex[1] - 1))
+        adjacentIndices.append((previousIndex[0] - 1,previousIndex[1] - 1))
+        adjacentIndices.append((previousIndex[0] + 1,previousIndex[1]))
+        adjacentIndices.append((previousIndex[0] - 1,previousIndex[1]))
+        return_list = []
+        for x,y in adjacentIndices:
+            if x >= 0 and x <= 3 and y >= 0 and y <= 3:
+                return_list.append((x,y))
+        return return_list
+                
+    def _in_board_starting_at(self, validIndices, remainingWord):
+        if len(remainingWord) == 0:
+            return True
+        for i,j in validIndices:
+            if remainingWord[0] == str(self.board[i][j]):
+                newValidIndices = self._adjacent_indices((i,j))
+                if self._in_board_starting_at(newValidIndices, remainingWord[1:]):
+                    return True
+        return False            
+                
+    def in_board(self, user_word):
+# function does not yet prevent re-use of already used letters in board
+        if len(user_word) < 3:
+            print("Word is too short")
+            return False
+        validIndices = []
+        for i in range(4):
+            for j in range(4):
+                validIndices.append((i,j))
+        return self._in_board_starting_at(validIndices, user_word)
 
 if __name__ == '__main__':
     boggle_cubes = []
@@ -104,7 +139,8 @@ if __name__ == '__main__':
     game = BoggleBoard(boggle_cubes)
     game.shake()
     print(game)
-     
+  
+
 
     
     
