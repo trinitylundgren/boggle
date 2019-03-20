@@ -38,7 +38,11 @@ Created on Sat Mar  9 18:40:12 2019
 # DIE14: U, W, I, L, R, G
 # DIE15: P, A, C, E, M, D
 
+import sys
+sys.path.insert(0, './TWL06')
 import random
+import twl
+import time
 
 class BoggleCube(object):
     def __init__(self, letters):
@@ -59,7 +63,7 @@ cubes = [['R', 'I', 'F', 'O', 'B', 'X'],
          ['L', 'U', 'P', 'E', 'T', 'S'],
          ['A', 'C', 'I', 'T', 'O', 'A'],
          ['Y', 'L', 'G', 'K', 'U', 'E'],
-         ['Qu', 'B', 'M', 'J', 'O', 'A'],
+         ['QU', 'B', 'M', 'J', 'O', 'A'],
          ['E', 'H', 'I', 'S', 'P', 'N'],
          ['V', 'E', 'T', 'I', 'G', 'N'],
          ['B', 'A', 'L', 'I', 'Y', 'T'],
@@ -109,38 +113,89 @@ class BoggleBoard(object):
             if x >= 0 and x <= 3 and y >= 0 and y <= 3:
                 return_list.append((x,y))
         return return_list
-                
-    def _in_board_starting_at(self, validIndices, remainingWord):
+    def _in_board_starting_at(self, validIndices, used_indices, remainingWord):
         if len(remainingWord) == 0:
             return True
         for i,j in validIndices:
-            if remainingWord[0] == str(self.board[i][j]):
-                newValidIndices = self._adjacent_indices((i,j))
-                if self._in_board_starting_at(newValidIndices, remainingWord[1:]):
+            new_used_indices = used_indices[:]
+            if remainingWord[0] == 'Q' and remainingWord[1] == 'U':
+                compare_letter = 'QU'
+            else:
+                compare_letter = remainingWord[0]
+            if compare_letter == str(self.board[i][j]):
+                new_used_indices.append((i,j))
+                newValidIndices = self._adjacent_indices((i,j))[:]
+                for (i,j) in new_used_indices:
+                    if (i,j) in newValidIndices:
+                        newValidIndices.remove((i,j))
+                if self._in_board_starting_at(newValidIndices, new_used_indices, remainingWord[1:]):
                     return True
         return False            
-                
     def in_board(self, user_word):
-# function does not yet prevent re-use of already used letters in board
-        if len(user_word) < 3:
-            print("Word is too short")
-            return False
+        board_check = user_word.upper()
         validIndices = []
         for i in range(4):
             for j in range(4):
                 validIndices.append((i,j))
-        return self._in_board_starting_at(validIndices, user_word)
-
+        used_indices = []
+        return self._in_board_starting_at(validIndices, used_indices, board_check)
+    def score_word(self, user_word):
+        if len(user_word) > 2:
+            if self.in_board(user_word):
+                if twl.check(user_word.lower()):
+                    print("Word is valid.")
+                    if len(user_word) < 5:
+                        return 1
+                    elif len(user_word) == 5:
+                        return 2
+                    elif len(user_word) == 6:
+                        return 5
+                    elif len(user_word) == 7:
+                        return 4
+                    else:
+                        return 11
+                else: 
+                    print('That is not a valid word.')
+                    return -1
+            else:
+                print('That word is not in the game board.')
+                return -1
+        else:
+            print('Word must be at least 3 letters long.')
+            return -1
+    def countdown(self, t):
+        while t:
+            mins, secs = divmod(t, 60)
+            timeformat = '{:02d}:{:02d}'.format(mins, secs)
+            print(timeformat, end ='\r')
+            time.sleep(1)
+            t -= 1
 if __name__ == '__main__':
     boggle_cubes = []
     for cube in cubes:
-        boggle_cubes.append(BoggleCube(cube))
-    
+        boggle_cubes.append(BoggleCube(cube)) 
     game = BoggleBoard(boggle_cubes)
     game.shake()
     print(game)
-  
-
+    user_word = None
+    user_score = 0
+    used_words = []
+    while True:
+        user_word = input('Please enter a word or enter 0 to stop:').upper()
+        if user_word == '0':
+            print('Goodbye!')
+            break
+        if user_word in used_words:
+            print('Word already used. Running score: ' + str(user_score) + ' points')
+            word_score = 0
+        else:
+            word_score = game.score_word(user_word)
+            user_score += word_score
+            if word_score > 0:
+                used_words.append(user_word.upper())
+                print('That word scored ' + str(word_score) + ' points. Running score: ' + str(user_score) + ' points')
+            else:
+                print('Running score: ' + str(user_score) + ' points')
 
     
     
