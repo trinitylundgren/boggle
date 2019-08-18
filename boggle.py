@@ -48,51 +48,52 @@ import string
 import threading
 
 game_title = [
-        "██████╗  ██████╗  ██████╗  ██████╗ ██╗     ███████╗",
-        "██╔══██╗██╔═══██╗██╔════╝ ██╔════╝ ██║     ██╔════╝",
-        "██████╔╝██║   ██║██║  ███╗██║  ███╗██║     █████╗  ",
-        "██╔══██╗██║   ██║██║   ██║██║   ██║██║     ██╔══╝  ",
-        "██████╔╝╚██████╔╝╚██████╔╝╚██████╔╝███████╗███████╗",
-        "╚═════╝  ╚═════╝  ╚═════╝  ╚═════╝ ╚══════╝╚══════╝"]
+    "██████╗  ██████╗  ██████╗  ██████╗ ██╗     ███████╗",
+    "██╔══██╗██╔═══██╗██╔════╝ ██╔════╝ ██║     ██╔════╝",
+    "██████╔╝██║   ██║██║  ███╗██║  ███╗██║     █████╗  ",
+    "██╔══██╗██║   ██║██║   ██║██║   ██║██║     ██╔══╝  ",
+    "██████╔╝╚██████╔╝╚██████╔╝╚██████╔╝███████╗███████╗",
+    "╚═════╝  ╚═════╝  ╚═════╝  ╚═════╝ ╚══════╝╚══════╝"
+]
+
 
 class BoggleCube(object):
     def __init__(self, letters):
         self.letters = letters[:]
         self.topletter = random.choice(self.letters)
+
     def roll(self):
         self.topletter = random.choice(self.letters)
+
     def __str__(self):
         return self.topletter
+
     def __repr__(self):
         return self.__str__()
 
-CUBES = [['R', 'I', 'F', 'O', 'B', 'X'],
-         ['I', 'F', 'E', 'H', 'E', 'Y'],
-         ['D', 'E', 'N', 'O', 'W', 'S'],
-         ['U', 'T', 'O', 'K', 'N', 'D'],
-         ['H', 'M', 'S', 'R', 'A', 'O'],
-         ['L', 'U', 'P', 'E', 'T', 'S'],
-         ['A', 'C', 'I', 'T', 'O', 'A'],
-         ['Y', 'L', 'G', 'K', 'U', 'E'],
-         ['QU', 'B', 'M', 'J', 'O', 'A'],
-         ['E', 'H', 'I', 'S', 'P', 'N'],
-         ['V', 'E', 'T', 'I', 'G', 'N'],
-         ['B', 'A', 'L', 'I', 'Y', 'T'],
-         ['E', 'Z', 'A', 'V', 'N', 'D'],
-         ['R', 'A', 'L', 'E', 'S', 'C'],
-         ['U', 'W', 'I', 'L', 'R', 'G'],
-         ['P', 'A', 'C', 'E', 'M', 'D']]
+
+CUBES = [['R', 'I', 'F', 'O', 'B', 'X'], ['I', 'F', 'E', 'H', 'E', 'Y'],
+         ['D', 'E', 'N', 'O', 'W', 'S'], ['U', 'T', 'O', 'K', 'N', 'D'],
+         ['H', 'M', 'S', 'R', 'A', 'O'], ['L', 'U', 'P', 'E', 'T', 'S'],
+         ['A', 'C', 'I', 'T', 'O', 'A'], ['Y', 'L', 'G', 'K', 'U', 'E'],
+         ['QU', 'B', 'M', 'J', 'O', 'A'], ['E', 'H', 'I', 'S', 'P', 'N'],
+         ['V', 'E', 'T', 'I', 'G', 'N'], ['B', 'A', 'L', 'I', 'Y', 'T'],
+         ['E', 'Z', 'A', 'V', 'N', 'D'], ['R', 'A', 'L', 'E', 'S', 'C'],
+         ['U', 'W', 'I', 'L', 'R', 'G'], ['P', 'A', 'C', 'E', 'M', 'D']]
 
 
 class BoggleBoard(object):
     def __init__(self, boggle_cubes):
         self.build_board(boggle_cubes)
+
     def build_board(self, boggle_cubes):
         self.row_one = boggle_cubes[:4]
         self.row_two = boggle_cubes[4:8]
         self.row_three = boggle_cubes[8:12]
         self.row_four = boggle_cubes[12:16]
-        self.board = [self.row_one, self.row_two, self.row_three, self.row_four]
+        self.board = [self.row_one, self.row_two,
+                      self.row_three, self.row_four]
+
     def __str__(self):
         board = ''
         for row in self.board:
@@ -100,8 +101,10 @@ class BoggleBoard(object):
                 board += '[' + str(cube) + ']'
             board += '\n'
         return board
+
     def cube_at(self, row, column):
         return self.board[row][column]
+
     def shake(self):
         shuffle_list = []
         for row in self.board:
@@ -110,25 +113,27 @@ class BoggleBoard(object):
                 shuffle_list.append(cube)
         random.shuffle(shuffle_list)
         self.build_board(shuffle_list)
-    def _adjacent_indices(self,previousIndex):
+
+    def _adjacent_indices(self, previousIndex):
         adjacentIndices = []
-        adjacentIndices.append((previousIndex[0],previousIndex[1] - 1))
-        adjacentIndices.append((previousIndex[0],previousIndex[1] + 1))
-        adjacentIndices.append((previousIndex[0] + 1,previousIndex[1] + 1))
-        adjacentIndices.append((previousIndex[0] - 1,previousIndex[1] + 1))
-        adjacentIndices.append((previousIndex[0] + 1,previousIndex[1] - 1))
-        adjacentIndices.append((previousIndex[0] - 1,previousIndex[1] - 1))
-        adjacentIndices.append((previousIndex[0] + 1,previousIndex[1]))
-        adjacentIndices.append((previousIndex[0] - 1,previousIndex[1]))
+        adjacentIndices.append((previousIndex[0], previousIndex[1] - 1))
+        adjacentIndices.append((previousIndex[0], previousIndex[1] + 1))
+        adjacentIndices.append((previousIndex[0] + 1, previousIndex[1] + 1))
+        adjacentIndices.append((previousIndex[0] - 1, previousIndex[1] + 1))
+        adjacentIndices.append((previousIndex[0] + 1, previousIndex[1] - 1))
+        adjacentIndices.append((previousIndex[0] - 1, previousIndex[1] - 1))
+        adjacentIndices.append((previousIndex[0] + 1, previousIndex[1]))
+        adjacentIndices.append((previousIndex[0] - 1, previousIndex[1]))
         return_list = []
-        for x,y in adjacentIndices:
+        for x, y in adjacentIndices:
             if x >= 0 and x <= 3 and y >= 0 and y <= 3:
-                return_list.append((x,y))
+                return_list.append((x, y))
         return return_list
+
     def _in_board_starting_at(self, validIndices, used_indices, remainingWord):
         if len(remainingWord) == 0:
             return True
-        for i,j in validIndices:
+        for i, j in validIndices:
             new_used_indices = used_indices[:]
             if remainingWord[0] == 'Q' and remainingWord[1] == 'U':
                 compare_letter = 'QU'
@@ -137,23 +142,27 @@ class BoggleBoard(object):
                 compare_letter = remainingWord[0]
                 letters_matched = 1
             if compare_letter == str(self.board[i][j]):
-                new_used_indices.append((i,j))
-                newValidIndices = self._adjacent_indices((i,j))[:]
-                for (i,j) in new_used_indices:
-                    if (i,j) in newValidIndices:
-                        newValidIndices.remove((i,j))
-                if self._in_board_starting_at(newValidIndices, new_used_indices,
+                new_used_indices.append((i, j))
+                newValidIndices = self._adjacent_indices((i, j))[:]
+                for (i, j) in new_used_indices:
+                    if (i, j) in newValidIndices:
+                        newValidIndices.remove((i, j))
+                if self._in_board_starting_at(newValidIndices,
+                                              new_used_indices,
                                               remainingWord[letters_matched:]):
                     return True
         return False
+
     def in_board(self, user_word):
         board_check = user_word.upper()
         validIndices = []
         for i in range(4):
             for j in range(4):
-                validIndices.append((i,j))
+                validIndices.append((i, j))
         used_indices = []
-        return self._in_board_starting_at(validIndices, used_indices, board_check)
+        return self._in_board_starting_at(validIndices, used_indices,
+                                          board_check)
+
 
 class BoggleDisplay(object):
     def __init__(self):
@@ -186,8 +195,8 @@ class BoggleDisplay(object):
         board_x_space = 1
 
         #Make outer window
-        self.mainWindow = curses.newwin(main_height, main_width,
-                                        main_begin_y, main_begin_x)
+        self.mainWindow = curses.newwin(main_height, main_width, main_begin_y,
+                                        main_begin_x)
         self.mainWindow.border()
 
         #Print title art
@@ -200,8 +209,8 @@ class BoggleDisplay(object):
         #Make boggle board window
         board_height = cube_height * 4 + 2 * board_y_margin + 3 * board_y_space
         board_width = cube_width * 4 + 2 * board_x_margin + 3 * board_x_space
-        board_begin_y =  ((main_height - board_height) // 2) - 2
-        board_begin_x =  (main_width - board_width) // 2 + 1
+        board_begin_y = ((main_height - board_height) // 2) - 2
+        board_begin_x = (main_width - board_width) // 2 + 1
         self.boardWindow = curses.newwin(board_height, board_width,
                                          board_begin_y, board_begin_x)
         self.boardWindow.border()
@@ -213,8 +222,7 @@ class BoggleDisplay(object):
             cube_row = []
             for column in range(4):
                 cube_start_y = (board_begin_y + board_y_margin +
-                                (row * cube_height) +
-                                (row * board_y_space))
+                                (row * cube_height) + (row * board_y_space))
                 cube_start_x = (board_begin_x + board_x_margin +
                                 (column * cube_width) +
                                 (column * board_x_space))
@@ -230,8 +238,8 @@ class BoggleDisplay(object):
         ui_width = main_width - 4
         ui_begin_y = main_height - ui_height
         ui_begin_x = main_begin_x + 2
-        self.ui_window = curses.newwin(ui_height, ui_width,
-                                       ui_begin_y, ui_begin_x)
+        self.ui_window = curses.newwin(ui_height, ui_width, ui_begin_y,
+                                       ui_begin_x)
         self.ui_window.border()
         self.ui_window.refresh()
 
@@ -241,11 +249,12 @@ class BoggleDisplay(object):
         wordlist_begin_y = ui_begin_y - wordlist_height
         wordlist_begin_x = ui_begin_x
         self.wordlist_window = curses.newwin(wordlist_height, wordlist_width,
-                                             wordlist_begin_y, wordlist_begin_x)
+                                             wordlist_begin_y,
+                                             wordlist_begin_x)
         self.wordlist_window.border()
         self.wordlist_window.addstr(0, 5, " WORDS USED ", curses.color_pair(1))
-        self.scroll_win = self.wordlist_window.derwin(wordlist_height-2,
-                                                      wordlist_width-2, 1, 1)
+        self.scroll_win = self.wordlist_window.derwin(wordlist_height - 2,
+                                                      wordlist_width - 2, 1, 1)
         self.scroll_win.scrollok(True)
         self.scroll_win.idlok(True)
         self.wordlist_window.refresh()
@@ -295,7 +304,8 @@ class BoggleDisplay(object):
         self.timer_window.refresh()
 
     def set_score(self, score, high_score):
-        self.score_window.addstr(2, (23 - len(str(score)) + 1) // 2, str(score))
+        self.score_window.addstr(2, (23 - len(str(score)) + 1) // 2,
+                                 str(score))
         self.score_window.refresh()
 
     def set_user_message(self, feedback, prompt):
@@ -315,6 +325,7 @@ class BoggleDisplay(object):
                 win.addstr(1, 2, cube_str, curses.color_pair(color))
                 win.refresh()
 
+
 class BoggleGame(object):
     def __init__(self):
         #Initialize the display
@@ -323,10 +334,11 @@ class BoggleGame(object):
     def run_menu(self):
         while True:
             self.feedback = "Welcome to Boggle!"
-            self.prompt = ["Please select from the following options: ", "",
-                     "PRESS [1] to Begin a New Game",
-                     "PRESS [2] to See Game Rules",
-                     "PRESS [3] to Quit"]
+            self.prompt = [
+                "Please select from the following options: ", "",
+                "PRESS [1] to Begin a New Game", "PRESS [2] to See Game Rules",
+                "PRESS [3] to Quit"
+            ]
             curses.curs_set(0)
             self.display.set_user_message(self.feedback, self.prompt)
             while True:
@@ -336,20 +348,23 @@ class BoggleGame(object):
                     self.display.close()
                     return
                 elif response == "2":
-                    rules = ["Make as many words as you can out of the letters" +
-                             " on the Boggle board in",
-                             "three minutes. Words are formed by combining adjacent"
-                             + " letters in a row, ", "without repeating letters." +
-                             " Words can be formed using any combination of ",
-                             "directions, including diagonals.", "",
-                             "Longer words score more points! One point is deducted"
-                             + " for entering a", "word that isn't in the board or "
-                             + "isn't a real word.", "",
-                             "Press any key to return to menu."]
+                    rules = [
+                        "Make as many words as you can out of the letters" +
+                        " on the Boggle board in",
+                        "three minutes. Words are formed by combining adjacent"
+                        + " letters in a row, ", "without repeating letters." +
+                        " Words can be formed using any combination of ",
+                        "directions, including diagonals.", "",
+                        "Longer words score more points! One point is deducted"
+                        + " for entering a",
+                        "word that isn't in the board or " +
+                        "isn't a real word.", "",
+                        "Press any key to return to menu."
+                    ]
                     user_key = 0
                     while not user_key:
-                        self.display.set_user_message("BOGGLE: Rules of the Game",
-                                                      rules)
+                        self.display.set_user_message(
+                            "BOGGLE: Rules of the Game", rules)
                         curses.curs_set(0)
                         user_key = self.display.ui_window.getch()
                     break
@@ -364,9 +379,9 @@ class BoggleGame(object):
 
     def pretty_time(self):
         minutes = self.time_remaining // 60
-        ten_sec = (self.time_remaining - (minutes*60)) // 10
-        unit_sec = (self.time_remaining - (minutes*60) - (ten_sec*10))
-        return str(minutes)+":"+str(ten_sec)+str(unit_sec)
+        ten_sec = (self.time_remaining - (minutes * 60)) // 10
+        unit_sec = (self.time_remaining - (minutes * 60) - (ten_sec * 10))
+        return str(minutes) + ":" + str(ten_sec) + str(unit_sec)
 
     def run_timer(self):
         while self.time_remaining:
@@ -411,13 +426,13 @@ class BoggleGame(object):
         #Initialize all data members
         self.user_score = 0
         self.used_words = []
-        self.time_remaining = 180 # 3 minutes in seconds
+        self.time_remaining = 180  # 3 minutes in seconds
         self.my_cubes = []
         self.high_score = high_score
         self.feedback = "Good luck!"
 
         #Display starting values (score of 0, time of 3:00, etc.)
-        self.display.set_user_message("",[])
+        self.display.set_user_message("", [])
         self.display.set_time(self.pretty_time())
         time.sleep(1)
         self.display.set_score(self.user_score, self.high_score)
@@ -439,12 +454,12 @@ class BoggleGame(object):
         self.display.display_cubes(self.game, 2)
         time.sleep(1)
         self.game.shake()
-        self.display.set_user_message("Game will begin in 3... 2... 1...",[])
+        self.display.set_user_message("Game will begin in 3... 2... 1...", [])
         self.display.display_cubes(self.game, 3)
         time.sleep(1)
         self.game.shake()
-        self.display.set_user_message("Game will begin in 3... 2... 1... START!"
-                                      , [])
+        self.display.set_user_message(
+            "Game will begin in 3... 2... 1... START!", [])
         self.display.display_cubes(self.game)
 
         #Begin running and handle display of timer
@@ -452,8 +467,8 @@ class BoggleGame(object):
 
         #Accept and process user-entered words
         while self.time_remaining > 0:
-            self.display.set_user_message(self.feedback,
-                                          ["Enter a word. Press ENTER to submit: "])
+            self.display.set_user_message(
+                self.feedback, ["Enter a word. Press ENTER to submit: "])
             curses.echo()
             self.user_word = self.display.ui_window.getstr().decode("utf-8")
             #Process self.user_word
@@ -466,8 +481,10 @@ class BoggleGame(object):
 
         #When time is out, end game, present final score, and display endscreen
         self.feedback = "Time is up!"
-        self.prompt = ["You scored "+str(self.user_score)+" points.", "",
-                       "Press any key to quit."]
+        self.prompt = [
+            "You scored " + str(self.user_score) + " points.", "",
+            "Press any key to quit."
+        ]
         user_key = 0
         while not user_key:
             self.display.set_user_message(self.feedback, self.prompt)
@@ -478,4 +495,3 @@ if __name__ == '__main__':
 
     my_game = BoggleGame()
     my_game.run_menu()
-
