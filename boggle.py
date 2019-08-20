@@ -60,7 +60,7 @@ game_title = [
 class BoggleCube(object):
     def __init__(self, letters):
         self.letters = letters[:]
-        self.topletter = random.choice(self.letters)
+        self.topletter = random.choice(letters)
 
     def roll(self):
         self.topletter = random.choice(self.letters)
@@ -94,6 +94,7 @@ class BoggleBoard(object):
         self.board = [self.row_one, self.row_two,
                       self.row_three, self.row_four]
 
+    #To print a visual BoggleBoard object to the console for inspection
     def __str__(self):
         board = ''
         for row in self.board:
@@ -114,53 +115,55 @@ class BoggleBoard(object):
         random.shuffle(shuffle_list)
         self.build_board(shuffle_list)
 
-    def _adjacent_indices(self, previousIndex):
-        adjacentIndices = []
-        adjacentIndices.append((previousIndex[0], previousIndex[1] - 1))
-        adjacentIndices.append((previousIndex[0], previousIndex[1] + 1))
-        adjacentIndices.append((previousIndex[0] + 1, previousIndex[1] + 1))
-        adjacentIndices.append((previousIndex[0] - 1, previousIndex[1] + 1))
-        adjacentIndices.append((previousIndex[0] + 1, previousIndex[1] - 1))
-        adjacentIndices.append((previousIndex[0] - 1, previousIndex[1] - 1))
-        adjacentIndices.append((previousIndex[0] + 1, previousIndex[1]))
-        adjacentIndices.append((previousIndex[0] - 1, previousIndex[1]))
-        return_list = []
-        for x, y in adjacentIndices:
-            if x >= 0 and x <= 3 and y >= 0 and y <= 3:
-                return_list.append((x, y))
-        return return_list
+    #Returns a list of valid adjacent indices given an index on the board
+    def _adjacent_indices(self, reference_index):
+        adjacent_indices = []
+        adjacent_indices.append((reference_index[0], reference_index[1] - 1))
+        adjacent_indices.append((reference_index[0], reference_index[1] + 1))
+        adjacent_indices.append((reference_index[0] + 1, reference_index[1] + 1))
+        adjacent_indices.append((reference_index[0] - 1, reference_index[1] + 1))
+        adjacent_indices.append((reference_index[0] + 1, reference_index[1] - 1))
+        adjacent_indices.append((reference_index[0] - 1, reference_index[1] - 1))
+        adjacent_indices.append((reference_index[0] + 1, reference_index[1]))
+        adjacent_indices.append((reference_index[0] - 1, reference_index[1]))
+        valid_adjacent_indices = []
+        for row, col in adjacent_indices:
+            if row >= 0 and row <= 3 and col >= 0 and col <= 3:
+                valid_adjacent_indices.append((row, col))
+        return valid_adjacent_indices
 
-    def _in_board_starting_at(self, validIndices, used_indices, remainingWord):
-        if len(remainingWord) == 0:
+    def _in_board_starting_at(self, valid_indices,
+                              used_indices, remaining_word):
+        if len(remaining_word) == 0:
             return True
-        for i, j in validIndices:
+        for i, j in valid_indices:
             new_used_indices = used_indices[:]
-            if remainingWord[0] == 'Q' and remainingWord[1] == 'U':
+            if remaining_word[0] == 'Q' and remaining_word[1] == 'U':
                 compare_letter = 'QU'
                 letters_matched = 2
             else:
-                compare_letter = remainingWord[0]
+                compare_letter = remaining_word[0]
                 letters_matched = 1
             if compare_letter == str(self.board[i][j]):
                 new_used_indices.append((i, j))
-                newValidIndices = self._adjacent_indices((i, j))[:]
+                new_valid_indices = self._adjacent_indices((i, j))[:]
                 for (i, j) in new_used_indices:
-                    if (i, j) in newValidIndices:
-                        newValidIndices.remove((i, j))
-                if self._in_board_starting_at(newValidIndices,
+                    if (i, j) in new_valid_indices:
+                        new_valid_indices.remove((i, j))
+                if self._in_board_starting_at(new_valid_indices,
                                               new_used_indices,
-                                              remainingWord[letters_matched:]):
+                                              remaining_word[letters_matched:]):
                     return True
         return False
 
     def in_board(self, user_word):
         board_check = user_word.upper()
-        validIndices = []
+        valid_indices = []
         for i in range(4):
             for j in range(4):
-                validIndices.append((i, j))
+                valid_indices.append((i, j))
         used_indices = []
-        return self._in_board_starting_at(validIndices, used_indices,
+        return self._in_board_starting_at(valid_indices, used_indices,
                                           board_check)
 
 
@@ -484,7 +487,7 @@ class BoggleGame(object):
         self.prompt = [
             "You scored " + str(self.user_score) + " points.", "",
             "Press any key to quit."
-        ]
+
         user_key = 0
         while not user_key:
             self.display.set_user_message(self.feedback, self.prompt)
