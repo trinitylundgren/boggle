@@ -486,7 +486,7 @@ class BoggleGame(object):
         self.feedback = "Time is up!"
         self.prompt = [
             "You scored " + str(self.user_score) + " points.", "",
-            "Press any key to quit."
+            "Press any key to quit."]
 
         user_key = 0
         while not user_key:
